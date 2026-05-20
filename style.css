@@ -1,0 +1,71 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #111;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  font-family: sans-serif;
+}
+
+video {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#controls {
+  position: fixed;
+  bottom: 40px;
+  left: 0;
+  right: 0;
+
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+
+  z-index: 999;
+}
+
+.record-btn {
+  width: 80px;
+  height: 80px;
+
+  border-radius: 50%;
+  border: none;
+
+  background: red;
+}
+
+.stop-btn {
+  padding: 15px 25px;
+  border: none;
+  border-radius: 12px;
+
+  background: white;
+  color: black;
+  font-size: 18px;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Режим записи */
+body.recording {
+  background: black;
+}
+
+body.recording video {
+  opacity: 0;
+}
+
+body.recording #controls {
+  display: none;
+}
