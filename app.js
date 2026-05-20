@@ -6,6 +6,7 @@ let mediaRecorder;
 let recordedChunks = [];
 let stream;
 
+/* Запуск записи */
 async function startRecording() {
 
   try {
@@ -32,23 +33,29 @@ async function startRecording() {
 
     mediaRecorder.start();
 
-    // Чёрный экран
+    // Черный экран
     document.body.classList.add("recording");
 
   } catch (err) {
 
-    alert("Ошибка доступа к камере: " + err);
+    alert("Ошибка камеры: " + err);
   }
 }
 
+/* Остановка */
 function stopRecording() {
 
-  if (mediaRecorder && mediaRecorder.state !== "inactive") {
+  if (mediaRecorder &&
+      mediaRecorder.state !== "inactive") {
+
     mediaRecorder.stop();
   }
 
   if (stream) {
-    stream.getTracks().forEach(track => track.stop());
+
+    stream.getTracks().forEach(track => {
+      track.stop();
+    });
   }
 
   document.body.classList.remove("recording");
@@ -57,6 +64,7 @@ function stopRecording() {
   startBtn.classList.remove("hidden");
 }
 
+/* Сохранение */
 function saveVideo() {
 
   const blob = new Blob(recordedChunks, {
@@ -65,7 +73,7 @@ function saveVideo() {
 
   const url = URL.createObjectURL(blob);
 
-  // Контейнер просмотра
+  // Контейнер
   const container = document.createElement("div");
 
   container.style.position = "fixed";
@@ -84,7 +92,7 @@ function saveVideo() {
   video.style.height = "80%";
   video.style.objectFit = "contain";
 
-  // Кнопка сохранения
+  // Кнопка скачать
   const saveBtn = document.createElement("button");
 
   saveBtn.innerText = "Сохранить видео";
@@ -96,6 +104,7 @@ function saveVideo() {
 
   saveBtn.style.padding = "15px 25px";
   saveBtn.style.fontSize = "18px";
+
   saveBtn.style.border = "none";
   saveBtn.style.borderRadius = "12px";
 
@@ -113,7 +122,7 @@ function saveVideo() {
     document.body.removeChild(a);
   };
 
-  // Кнопка закрытия
+  // Закрыть
   const closeBtn = document.createElement("button");
 
   closeBtn.innerText = "Закрыть";
@@ -123,7 +132,6 @@ function saveVideo() {
   closeBtn.style.right = "20px";
 
   closeBtn.style.padding = "10px 20px";
-  closeBtn.style.fontSize = "16px";
 
   closeBtn.onclick = () => {
 
@@ -139,6 +147,8 @@ function saveVideo() {
   document.body.appendChild(container);
 }
 
+/* Кнопки */
+
 startBtn.addEventListener("click", async () => {
 
   startBtn.classList.add("hidden");
@@ -149,7 +159,8 @@ startBtn.addEventListener("click", async () => {
 
 stopBtn.addEventListener("click", stopRecording);
 
-// PWA
+/* Service Worker */
+
 if ("serviceWorker" in navigator) {
 
   navigator.serviceWorker.register("./sw.js");
