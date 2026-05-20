@@ -6,7 +6,8 @@ let mediaRecorder;
 let recordedChunks = [];
 let stream;
 
-/* Запуск записи */
+/* Старт записи */
+
 async function startRecording() {
 
   try {
@@ -18,9 +19,9 @@ async function startRecording() {
 
     preview.srcObject = stream;
 
-    mediaRecorder = new MediaRecorder(stream);
-
     recordedChunks = [];
+
+    mediaRecorder = new MediaRecorder(stream);
 
     mediaRecorder.ondataavailable = (event) => {
 
@@ -29,11 +30,11 @@ async function startRecording() {
       }
     };
 
-    mediaRecorder.onstop = saveVideo;
+    mediaRecorder.onstop = showPreview;
 
     mediaRecorder.start();
 
-    // Черный экран
+    // Чёрный экран
     document.body.classList.add("recording");
 
   } catch (err) {
@@ -42,12 +43,14 @@ async function startRecording() {
   }
 }
 
-/* Остановка */
+/* Стоп */
+
 function stopRecording() {
 
-  if (mediaRecorder &&
-      mediaRecorder.state !== "inactive") {
-
+  if (
+    mediaRecorder &&
+    mediaRecorder.state !== "inactive"
+  ) {
     mediaRecorder.stop();
   }
 
@@ -64,55 +67,60 @@ function stopRecording() {
   startBtn.classList.remove("hidden");
 }
 
-/* Сохранение */
-function saveVideo() {
+/* Просмотр после записи */
+
+function showPreview() {
 
   const blob = new Blob(recordedChunks, {
     type: "video/mp4"
   });
 
-  const url = URL.createObjectURL(blob);
+  const videoURL = URL.createObjectURL(blob);
 
-  // Контейнер
+  // Главный контейнер
   const container = document.createElement("div");
 
   container.style.position = "fixed";
   container.style.inset = "0";
   container.style.background = "black";
-  container.style.zIndex = "9999";
+  container.style.zIndex = "99999";
 
   // Видео
   const video = document.createElement("video");
 
-  video.src = url;
+  video.src = videoURL;
   video.controls = true;
   video.autoplay = true;
+  video.playsInline = true;
 
   video.style.width = "100%";
   video.style.height = "80%";
   video.style.objectFit = "contain";
 
-  // Кнопка скачать
+  // Кнопка сохранить
   const saveBtn = document.createElement("button");
 
-  saveBtn.innerText = "Сохранить видео";
+  saveBtn.innerText = "Сохранить";
 
   saveBtn.style.position = "absolute";
   saveBtn.style.bottom = "40px";
   saveBtn.style.left = "50%";
   saveBtn.style.transform = "translateX(-50%)";
 
-  saveBtn.style.padding = "15px 25px";
+  saveBtn.style.padding = "16px 28px";
   saveBtn.style.fontSize = "18px";
 
   saveBtn.style.border = "none";
-  saveBtn.style.borderRadius = "12px";
+  saveBtn.style.borderRadius = "14px";
+
+  saveBtn.style.background = "white";
+  saveBtn.style.color = "black";
 
   saveBtn.onclick = () => {
 
     const a = document.createElement("a");
 
-    a.href = url;
+    a.href = videoURL;
     a.download = `video-${Date.now()}.mp4`;
 
     document.body.appendChild(a);
@@ -122,7 +130,7 @@ function saveVideo() {
     document.body.removeChild(a);
   };
 
-  // Закрыть
+  // Кнопка закрыть
   const closeBtn = document.createElement("button");
 
   closeBtn.innerText = "Закрыть";
@@ -131,15 +139,20 @@ function saveVideo() {
   closeBtn.style.top = "20px";
   closeBtn.style.right = "20px";
 
-  closeBtn.style.padding = "10px 20px";
+  closeBtn.style.padding = "10px 18px";
+  closeBtn.style.fontSize = "16px";
+
+  closeBtn.style.border = "none";
+  closeBtn.style.borderRadius = "10px";
 
   closeBtn.onclick = () => {
 
     container.remove();
 
-    URL.revokeObjectURL(url);
+    URL.revokeObjectURL(videoURL);
   };
 
+  // Добавление элементов
   container.appendChild(video);
   container.appendChild(saveBtn);
   container.appendChild(closeBtn);
@@ -161,7 +174,7 @@ stopBtn.addEventListener("click", stopRecording);
 
 /* Service Worker */
 
-if ("serviceWorker" in navigator) {
+if ("serviceWorker" in navigator") {
 
   navigator.serviceWorker.register("./sw.js");
 }
